@@ -159,6 +159,28 @@ button{font-family:inherit;color:inherit;cursor:pointer;touch-action:manipulatio
 .bub.popped{animation:popb .22s forwards;pointer-events:none}
 @keyframes floaty{to{transform:translateY(-16px) translateX(6px)}}
 @keyframes popb{to{transform:scale(1.6);opacity:0}}
+.arena{position:relative;height:220px;border-radius:24px;margin-top:10px;overflow:hidden;background:linear-gradient(180deg,#fff6d6,#ffe3ef);display:grid;place-items:center}
+.arena .clean{font-size:24px;font-weight:800;animation:jump .6s;text-align:center;padding:0 10px}
+.tgt{position:absolute;top:0;left:0;border:0;background:none;padding:6px;font-size:46px;line-height:1;filter:drop-shadow(0 3px 0 rgba(0,0,0,.12))}
+.tgt.m-floaty{animation:floaty 2.2s ease-in-out infinite alternate}
+.tgt.m-fall{animation:fallLoop linear infinite}
+.tgt.m-rise{animation:riseLoop linear infinite}
+.tgt.m-wander{animation:wander ease-in-out infinite alternate}
+.tgt.got{animation:popb .25s forwards!important;pointer-events:none}
+@keyframes fallLoop{from{transform:translateY(-70px)}to{transform:translateY(230px)}}
+@keyframes riseLoop{from{transform:translateY(230px)}to{transform:translateY(-70px)}}
+@keyframes wander{0%{transform:translate(0,0)}33%{transform:translate(40px,-30px)}66%{transform:translate(-30px,20px)}100%{transform:translate(20px,30px)}}
+.center{display:flex;flex-direction:column;align-items:center}
+.bigtap{border:0;background:none;font-size:96px;line-height:1;padding:0}
+.bigtap.boing{animation:boing .3s}
+@keyframes boing{50%{transform:scale(1.25) rotate(-6deg)}}
+.dots{margin-top:6px;font-size:24px;letter-spacing:4px;color:var(--lav-d)}
+.choices{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:10px}
+.choice{width:84px;height:84px;border-radius:22px;border:4px solid #fff;background:#fff;font-size:48px;line-height:1;padding:0;box-shadow:0 5px 0 rgba(155,126,232,.25)}
+.choice.no{animation:shake .35s}
+.choice.yes{background:var(--mint);border-color:var(--mint-d);animation:jump .6s}
+.node.cur.newopen{animation:unlockPop .9s cubic-bezier(.3,1.6,.5,1),pulseNode 1.4s .9s infinite}
+@keyframes unlockPop{0%{transform:translate(-50%,-50%) scale(.2) rotate(-40deg)}60%{transform:translate(-50%,-50%) scale(1.35) rotate(8deg)}100%{transform:translate(-50%,-50%) scale(1)}}
 .finishbtn{display:block;margin:6px auto 0;font-size:28px;padding:12px 44px}
 .finishbtn.ready{animation:breathe 1.2s infinite}
 .squad{margin-top:22px}
@@ -281,6 +303,11 @@ button{font-family:inherit;color:inherit;cursor:pointer;touch-action:manipulatio
       <div class="sink" id="sink"></div>
       <div class="mstatus" id="m2s">Pop all the soap bubbles!</div>
     </article>
+    <article class="mission" id="m3">
+      <div class="mhead"><span class="mnum">3</span><span id="m3t">Daily challenge</span></div>
+      <div class="arena" id="arena"></div>
+      <div class="mstatus" id="m3s"></div>
+    </article>
   </div>
   <button class="btn-main pink finishbtn" id="finishBtn">🏁 Finish level</button>
   <div class="cast small squad" data-cast></div>
@@ -394,7 +421,7 @@ function chestSVG(){
 
 /* ================= SAVE ================= */
 const KEY = "julia-potty-game-v2";
-const blank = () => ({v:2, points:0, levels:Array.from({length:28},()=>({s:null,d:null,p:0})), chests:[false,false,false,false], choices:["",""], sound:true, music:true, dailyLock:true});
+const blank = () => ({v:2, points:0, levels:Array.from({length:28},()=>({s:null,d:null,p:0})), chests:[false,false,false,false], choices:["",""], sound:true, music:true, dailyLock:true, seen:-1});
 function valid(x){ return x && x.v===2 && Array.isArray(x.levels) && x.levels.length===28 && Array.isArray(x.chests); }
 function load(){ try{ const x = JSON.parse(localStorage.getItem(KEY)); if(valid(x)) return Object.assign(blank(), x); }catch(e){} return blank(); }
 let S = load();
@@ -439,6 +466,8 @@ const sfx = {
   start(){ [523,659,784,1047].forEach((f,i)=>tone(f,i*.08,.14,"square",.06)); },
   fanfare(){ [523,659,784,1047].forEach((f,i)=>tone(f,i*.12,.25,"triangle",.2)); tone(784,.55,.15,"triangle",.18); tone(1047,.7,.6,"triangle",.22); tone(1319,.7,.6,"sine",.12); },
   cheer(){ [392,523,659,523,784].forEach((f,i)=>tone(f,i*.1,.18,"sine",.18)); },
+  giggle(){ for(let i=0;i<5;i++){ slide(1000+i*40,1500+i*60,.07,"sine",.14,i*.1); slide(1500+i*60,1100,.05,"sine",.08,i*.1+.07); } },
+  unlock(){ [784,988,1175,1568].forEach((f,i)=>tone(f,i*.07,.2,"sine",.16)); [1568,2093].forEach((f,i)=>tone(f,.35+i*.08,.3,"triangle",.1)); },
   chestTap(n){ tone(440+n*160,0,.15,"square",.08); },
   bunny(){ [880,1175,1397].forEach((f,i)=>tone(f,i*.09,.12,"sine",.18)); },
   crow(){ slide(520,260,.18,"sawtooth",.12); slide(520,260,.18,"sawtooth",.12,.22); },
@@ -466,7 +495,7 @@ function say(text){
   if(!S.sound || !("speechSynthesis" in window)) return;
   try{ if(!voice) pickVoice(); speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text.replace(/[^\p{L}\p{N}\s!,.']/gu,""));
     if(voice){ u.voice=voice; u.lang=voice.lang; } else u.lang="en-US";
-    u.pitch=1.35; u.rate=1.0; speechSynthesis.speak(u); }catch(e){}
+    u.pitch=2; u.rate=1.12; speechSynthesis.speak(u); }catch(e){}
 }
 /* tiny background tune */
 const TUNE=[523,659,784,659,587,698,880,698,523,659,784,1047,988,784,659,587];
@@ -565,7 +594,7 @@ function renderMap(){
       const idx=w*7+i, L=S.levels[idx];
       let st = L.s==="win"?"win" : L.s==="try"?"try" : (idx===ci && unlocked(idx)) ? (sleep?"sleep":"cur") : "lock";
       const b=el("button","node "+st); b.style.left=pts[i][0]+"%"; b.style.top=pts[i][1]+"px";
-      b.innerHTML = ({win:`<span class="mini">⭐⭐⭐</span><span class="n">${idx+1}</span>`, try:`<span class="mini">⭐🍬</span><span class="n">${idx+1}</span>`,
+      b.innerHTML = ({win:`<span class="mini">⭐⭐⭐${L.b?"🎯":""}</span><span class="n">${idx+1}</span>`, try:`<span class="mini">⭐🍬${L.b?"🎯":""}</span><span class="n">${idx+1}</span>`,
         cur:`<span class="n">${idx+1}</span>`, sleep:`<span class="n">🌙</span>`, lock:`<span class="n">🔒</span>`})[st] + `<span class="day">${SHORT[i]}</span>`;
       b.setAttribute("aria-label",`Level ${idx+1}, ${DAYS[i]}`);
       b.addEventListener("click",()=>tapNode(idx,st));
@@ -588,6 +617,13 @@ function renderMap(){
     const f=el("section","finale"); f.innerHTML=`<div class="trophy">🏆</div><h3>Julia is a Potty Legend!</h3><p style="font-weight:800">All 28 levels and 4 treasures done!</p>`;
     root.appendChild(f);
   }
+  const openIdx = (ci!==-1 && unlocked(ci) && !sleep) ? ci : null;
+  if(openIdx!==null && S.seen!==openIdx && $("#map").classList.contains("active")){
+    S.seen=openIdx; save();
+    const n=root.querySelector(".node.cur"); if(n) n.classList.add("newopen");
+    setTimeout(()=>{ sfx.unlock(); setTimeout(sfx.giggle,450); confetti(60);
+      toast(`🔓 Level ${openIdx+1} is open!`); setTimeout(()=>say(`Yay! Level ${openIdx+1} is open!`),800); },600);
+  }
 }
 function focusCurrent(){
   const t=document.querySelector(".chest-node.ready")||document.querySelector(".node.cur")||document.querySelector(".node.sleep")||document.querySelector(".finale");
@@ -603,15 +639,72 @@ function tapNode(idx,st){
   toast(prev ? "Open the treasure chest first! 🎁" : "Finish the levels before this one! 🔒");
 }
 
+/* ================= DAILY CHALLENGES ================= */
+const CHALLENGES=[
+  {t:"tap", title:"Dry your hands!", item:"💧", n:6, move:"floaty", hint:"Tap all the water drops!", done:"All dry! 🙌"},
+  {t:"tap", title:"Catch the stars!", item:"⭐", n:6, move:"fall", hint:"Tap the falling stars!", done:"Star catcher! 🌟"},
+  {t:"find", title:"Find the potty!", answer:"🚽", others:["🛁","🧸","🍎"], done:"You found the potty! 🚽"},
+  {t:"tap", title:"Feed Kiko berries!", item:"🍓", n:5, move:"floaty", hint:"Tap all the berries!", done:"Yum! Kiko says thank you! 🍓"},
+  {t:"tap", title:"Pop the balloons!", item:"🎈", n:6, move:"rise", hint:"Pop the balloons!", done:"Pop pop hooray! 🎉"},
+  {t:"find", title:"Find the soap!", answer:"🧼", others:["🍌","🧦","🎲"], done:"Soap found! 🫧"},
+  {t:"one", title:"Roll the toilet paper!", item:"🧻", n:5, done:"Roll roll roll! 🧻"},
+  {t:"find", title:"Where is Mimi?", answer:"🐱", others:["💨","💨"], hidden:true, done:"Peekaboo, Mimi! 🐱"},
+  {t:"find", title:"Pick the big girl undies!", answer:"🩲", others:["🧤","🎩","🧣"], done:"Big girl undies! 💖"},
+  {t:"one", title:"Wash the ducky!", item:"🦆", n:5, done:"Squeaky clean ducky! 🛁"},
+  {t:"tap", title:"Catch the butterflies!", item:"🦋", n:5, move:"wander", hint:"Tap the butterflies!", done:"Flutter flutter! 🦋"}
+];
+const challengeFor = idx => CHALLENGES[idx % CHALLENGES.length];
+function setupChallenge(){
+  const C=challengeFor(run.idx), a=$("#arena"); a.innerHTML="";
+  $("#m3t").textContent=C.title;
+  if(C.t==="tap"){
+    const mv = reduced() ? "floaty" : C.move;
+    for(let i=0;i<C.n;i++){
+      const b=el("button","tgt m-"+mv); b.textContent=C.item; b.setAttribute("aria-label",C.item);
+      b.style.left=(3+i*(86/C.n)+Math.random()*4)+"%";
+      if(mv==="fall"||mv==="rise"){ b.style.animationDuration=(3.4+Math.random()*2)+"s"; b.style.animationDelay=(-Math.random()*4)+"s"; }
+      else { b.style.top=(8+Math.random()*55)+"%"; b.style.animationDuration=(2+Math.random()*2)+"s"; b.style.animationDelay=(-Math.random()*2)+"s"; }
+      const hit=e=>{ if(e) e.preventDefault(); if(run.bonus||b.classList.contains("got")) return;
+        b.classList.add("got"); sfx.pop(); setTimeout(()=>b.remove(),260); run.cCount++;
+        if(run.cCount>=C.n) bonusDone(C); else updateLevel(); };
+      b.addEventListener("pointerdown",hit);
+      b.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" ") hit(e); });
+      a.appendChild(b);
+    }
+  } else if(C.t==="one"){
+    const w=el("div","center"), b=el("button","bigtap"), dots=el("div","dots");
+    b.textContent=C.item; b.setAttribute("aria-label",C.title);
+    const draw=()=>dots.textContent="●".repeat(run.cCount)+"○".repeat(C.n-run.cCount); draw();
+    b.addEventListener("click",()=>{ if(run.bonus) return; run.cCount++; b.classList.remove("boing"); void b.offsetWidth; b.classList.add("boing");
+      tone(500+run.cCount*120,0,.12,"triangle",.15); draw(); if(run.cCount>=C.n) bonusDone(C); else updateLevel(); });
+    w.append(b,dots); a.appendChild(w);
+  } else {
+    const g=el("div","choices");
+    [C.answer,...C.others].sort(()=>Math.random()-.5).forEach(o=>{
+      const b=el("button","choice"); b.textContent=C.hidden?"📦":o; b.setAttribute("aria-label",C.hidden?"Box":o);
+      b.addEventListener("click",()=>{ if(run.bonus) return; if(C.hidden) b.textContent=o;
+        if(o===C.answer){ b.classList.add("yes"); bonusDone(C); }
+        else { b.classList.remove("no"); void b.offsetWidth; b.classList.add("no"); sfx.boop(); say("Not this one! Try again!"); } });
+      g.appendChild(b);
+    });
+    a.appendChild(g);
+  }
+}
+function bonusDone(C){
+  run.bonus=true; sfx.cheer(); setTimeout(sfx.giggle,300); confetti(50); say(C.done);
+  if(C.t==="tap") setTimeout(()=>{ $("#arena").innerHTML=`<div class="clean">${C.done}</div>`; },280);
+  updateLevel();
+}
+
 /* ================= LEVEL ================= */
 let run=null;
 function startLevel(idx){
-  run={idx,potty:false,oops:false,wash:false,popped:0};
+  run={idx,potty:false,oops:false,wash:false,popped:0,bonus:false,cCount:0};
   const w=Math.floor(idx/7), W=WORLDS[w];
   $("#level").style.background=W.bg;
   $("#lvTitle").textContent=`Level ${idx+1}`;
   $("#lvSub").textContent=`${DAYS[idx%7]} in ${W.name} ${W.emoji}`;
-  resetSink(); updateLevel(); show("level"); sfx.start();
+  resetSink(); setupChallenge(); updateLevel(); show("level"); sfx.start();
   setTimeout(()=>say(`Level ${idx+1}! Let's go Julia!`),300);
 }
 function updateLevel(){
@@ -620,6 +713,9 @@ function updateLevel(){
   $("#oopsBtn").setAttribute("aria-pressed",run.oops);
   $("#m2").classList.toggle("done",run.wash);
   $("#m2s").textContent = run.wash ? "🙌 Sparkly clean hands!" : run.popped ? `Bubbles popped: ${run.popped} / 8` : "Pop all the soap bubbles!";
+  const C=challengeFor(run.idx); $("#m3").classList.toggle("done",run.bonus);
+  $("#m3s").textContent = run.bonus ? "🎯 Bonus +30 ⭐ won!" :
+    (C.t==="tap" ? `${C.hint} ${run.cCount}/${C.n}` : C.t==="one" ? `Tap it ${C.n} times!` : C.hidden ? "Tap a box to peek!" : "Tap the right one!") + " Bonus +30 ⭐";
   $("#finishBtn").classList.toggle("ready", run.potty && run.wash);
 }
 $("#toiletBtn").addEventListener("click",()=>{
@@ -651,23 +747,24 @@ function popBubble(bb){
 }
 $("#lvBack").addEventListener("click",()=>{ sfx.click(); show("map"); renderMap(); focusCurrent(); });
 $("#finishBtn").addEventListener("click",()=>{
-  const win = run.potty && run.wash && !run.oops, before=S.points;
-  S.points = win ? S.points+100 : Math.max(0,S.points-20);
-  S.levels[run.idx]={s:win?"win":"try", d:today(), p:S.points-before};
+  const win = run.potty && run.wash && !run.oops, before=S.points, bonus=run.bonus?30:0;
+  S.points = (win ? S.points+100 : Math.max(0,S.points-20)) + bonus;
+  S.levels[run.idx]={s:win?"win":"try", d:today(), p:S.points-before, b:run.bonus};
+  const pd=S.levels[run.idx].p, ptxt=(pd>0?"+":"")+pd+" ⭐";
   save(); renderHud(true);
   const stars=$("#rStars").children; [...stars].forEach(s=>s.classList.remove("on"));
   const n = win?3:1; for(let i=0;i<n;i++) setTimeout(()=>{ stars[[0,2,1][i]].classList.add("on"); tone(784+i*200,0,.18,"triangle",.18); },400+i*350);
   if(win){
     $("#rTreat").textContent="🍫"; $("#rTitle").textContent="Delicious Chocolate Reward!";
-    $("#rPts").textContent="+100 ⭐"; $("#rPts").className="pts plus";
+    $("#rPts").textContent=ptxt; $("#rPts").className="pts plus";
     $("#rMsg").textContent=`Amazing day, Julia! You're a superstar!`;
-    $("#rSticker").innerHTML=`New sticker: <b>${STICKERS[run.idx]}</b>`;
+    $("#rSticker").innerHTML=`New sticker: <b>${STICKERS[run.idx]}</b>`+(bonus?"<br>🎯 Daily challenge bonus +30 ⭐":"");
     sfx.fanfare(); confetti(200); starShower(); cheerAll(); setTimeout(()=>say("Amazing job Julia! You get a chocolate!"),800);
   } else {
     $("#rTreat").textContent="🍬"; $("#rTitle").textContent="Sweet Candy Reward!";
-    $("#rPts").textContent = S.levels[run.idx].p ? `${S.levels[run.idx].p} ⭐` : "Keep going!"; $("#rPts").className="pts minus";
+    $("#rPts").textContent = pd ? ptxt : "Keep going!"; $("#rPts").className="pts "+(pd>0?"plus":"minus");
     $("#rMsg").textContent="Keep trying, Julia! 🌟 Every try makes you stronger!";
-    $("#rSticker").textContent="Get 3 stars next time for a new sticker!";
+    $("#rSticker").innerHTML="Get 3 stars next time for a new sticker!"+(bonus?"<br>🎯 Daily challenge bonus +30 ⭐":"");
     sfx.cheer(); confetti(80); starShower(["🍬","🌟","💖"],24); setTimeout(()=>say("Keep trying Julia! Here's a sweet candy!"),800);
   }
   openOv("resultOv");
