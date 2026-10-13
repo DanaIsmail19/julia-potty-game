@@ -211,6 +211,8 @@ button{font-family:inherit;color:inherit;cursor:pointer;touch-action:manipulatio
 .pbtn.danger{background:#ffe1e9;color:#a3214f}
 .pbtn.danger.armed{background:#e2335f;color:#fff;animation:breathe .6s infinite}
 .panel small{display:block;color:var(--soft);font-weight:600;font-size:14px;margin-bottom:10px}
+.restart{margin-top:22px;border:0;border-radius:999px;padding:8px 22px;font-weight:800;font-size:18px;background:rgba(255,255,255,.85);color:var(--ink);box-shadow:0 4px 0 rgba(155,126,232,.3);min-height:48px}
+.restart:active{transform:translateY(3px);box-shadow:none}
 #toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translate(-50%,140%);background:#5a3b8f;color:#fff;font-weight:800;font-size:18px;border-radius:20px;padding:10px 20px;z-index:80;transition:transform .35s cubic-bezier(.3,1.6,.5,1);max-width:92vw;text-align:center}
 #toast.show{transform:translate(-50%,0)}
 #confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:90}
@@ -230,6 +232,7 @@ button{font-family:inherit;color:inherit;cursor:pointer;touch-action:manipulatio
   <div class="cast" data-cast></div>
   <div class="title-stat" id="titleStat">⭐ Let's play!</div>
   <button class="btn-main play" id="playBtn">▶ Play</button>
+  <button class="restart" id="titleReset">🔄 Start over</button>
 </section>
 
 <!-- ============ MAP ============ -->
@@ -242,11 +245,12 @@ button{font-family:inherit;color:inherit;cursor:pointer;touch-action:manipulatio
       <button class="iconbtn" id="stickBtn" aria-label="Sticker book">📒</button>
       <button class="iconbtn" id="musicBtn" aria-label="Music">🎵</button>
       <button class="iconbtn" id="soundBtn" aria-label="Sound">🔊</button>
+      <button class="iconbtn" id="resetBtn" aria-label="Start over">🔄</button>
       <button class="iconbtn" id="gearBtn" aria-label="Grown-up corner, press and hold">⚙️</button>
     </div>
   </header>
   <div id="mapInner"></div>
-  <div class="map-foot">Grown-ups: press and hold ⚙️ for prizes, backup and start over.</div>
+  <div class="map-foot">Tap 🔄 to start over. Grown-ups: press and hold ⚙️ for prizes and backup.</div>
 </section>
 
 <!-- ============ LEVEL ============ -->
@@ -333,6 +337,16 @@ button{font-family:inherit;color:inherit;cursor:pointer;touch-action:manipulatio
   </div>
 </div>
 
+<div class="overlay" id="resetOv" role="dialog" aria-modal="true" aria-labelledby="resetTitle">
+  <div class="pop">
+    <div class="treat">🔄</div>
+    <h3 id="resetTitle">Start a new game?</h3>
+    <p>This clears all levels, points, stickers and treasures.</p>
+    <button class="btn-main pink" id="resetYes">Yes, start over</button>
+    <div style="margin-top:14px"><button class="pbtn" data-close>No, keep playing</button></div>
+  </div>
+</div>
+
 <div id="toast" role="status"></div>
 <div class="stars" id="starsBox"></div>
 <canvas id="confetti"></canvas>
@@ -344,8 +358,8 @@ const $ = s => document.querySelector(s);
 const el = (tag, cls) => { const e = document.createElement(tag); if (cls) e.className = cls; return e; };
 
 /* ================= DATA ================= */
-const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
-const SHORT = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const DAYS = ["Day 1","Day 2","Day 3","Day 4","Day 5","Day 6","Day 7"];
+const SHORT = DAYS;
 const WORLDS = [
   {name:"Candy Meadow", emoji:"🍬", color:"#3fbf8f", bg:"linear-gradient(180deg,#e4fbef,#bcedd5)", pe:"🎁", prize:"Buy a toy from the store", custom:false, decor:["🌳","🍭","🌷","🍄","🌼","🐞"]},
   {name:"Crepe Castle", emoji:"🥞", color:"#ff7fab", bg:"linear-gradient(180deg,#ffeaf2,#ffcfe0)", pe:"🥞", prize:"Eat a yummy crepe", custom:false, decor:["🏰","🍓","🧁","🍰","🎀","🍒"]},
@@ -439,9 +453,20 @@ const sfx = {
     src.connect(f).connect(g).connect(a.destination); src.start(); setTimeout(()=>sfx.cheer(),700); }
 };
 sfx.cat2 = sfx.cat;
+let voice=null;
+const FEM=/female|samantha|karen|victoria|zira|aria|jenny|michelle|moira|tessa|fiona|susan|allison|ava|serena|kate|libby|sonia|natasha|hazel|catherine|emma|joanna|salli|kendra|google us english|google uk english female/i;
+const MALE=/\bmale\b|david|mark|daniel|alex\b|fred|george|james|guy|ryan|thomas|arthur|oliver|rishi|aaron/i;
+function pickVoice(){
+  if(!("speechSynthesis" in window)) return;
+  const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang));
+  voice = vs.find(v=>FEM.test(v.name)&&!MALE.test(v.name)) || vs.find(v=>!MALE.test(v.name)) || vs[0] || null;
+}
+if("speechSynthesis" in window){ pickVoice(); speechSynthesis.addEventListener?.("voiceschanged",pickVoice); }
 function say(text){
   if(!S.sound || !("speechSynthesis" in window)) return;
-  try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text.replace(/[^\p{L}\p{N}\s!,.']/gu,"")); u.pitch=1.6; u.rate=1.05; speechSynthesis.speak(u); }catch(e){}
+  try{ if(!voice) pickVoice(); speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text.replace(/[^\p{L}\p{N}\s!,.']/gu,""));
+    if(voice){ u.voice=voice; u.lang=voice.lang; } else u.lang="en-US";
+    u.pitch=1.35; u.rate=1.0; speechSynthesis.speak(u); }catch(e){}
 }
 /* tiny background tune */
 const TUNE=[523,659,784,659,587,698,880,698,523,659,784,1047,988,784,659,587];
@@ -635,7 +660,7 @@ $("#finishBtn").addEventListener("click",()=>{
   if(win){
     $("#rTreat").textContent="🍫"; $("#rTitle").textContent="Delicious Chocolate Reward!";
     $("#rPts").textContent="+100 ⭐"; $("#rPts").className="pts plus";
-    $("#rMsg").textContent=`Amazing ${DAYS[run.idx%7]}, Julia! You're a superstar!`;
+    $("#rMsg").textContent=`Amazing day, Julia! You're a superstar!`;
     $("#rSticker").innerHTML=`New sticker: <b>${STICKERS[run.idx]}</b>`;
     sfx.fanfare(); confetti(200); starShower(); cheerAll(); setTimeout(()=>say("Amazing job Julia! You get a chocolate!"),800);
   } else {
@@ -706,7 +731,7 @@ gear.addEventListener("contextmenu",e=>e.preventDefault());
 const encode = () => btoa(unescape(encodeURIComponent(JSON.stringify(S))));
 function openParent(){
   sfx.click(); $("#pc3").value=S.choices[0]||""; $("#pc4").value=S.choices[1]||""; $("#pLock").checked=!!S.dailyLock;
-  $("#pCode").value=encode(); disarm(); openOv("parentOv");
+  $("#pCode").value=encode(); openOv("parentOv");
 }
 $("#pc3").addEventListener("input",e=>{ S.choices[0]=e.target.value; save(); renderMap(); });
 $("#pc4").addEventListener("input",e=>{ S.choices[1]=e.target.value; save(); renderMap(); });
@@ -728,15 +753,14 @@ $("#pLoad").addEventListener("click",()=>{
     if(!valid(x)) throw 0; S=Object.assign(blank(),x); save(); renderAll(); openParent(); toast("Progress loaded! 🎉");
   }catch(e){ toast("That code didn't work. Paste the whole code and try again."); }
 });
-let armT=null;
-function disarm(){ const r=$("#pReset"); r.classList.remove("armed"); r.textContent="🗑️ Start over"; clearTimeout(armT); }
-$("#pReset").addEventListener("click",()=>{
-  const r=$("#pReset");
-  if(!r.classList.contains("armed")){ r.classList.add("armed"); r.textContent="Tap again to erase everything"; armT=setTimeout(disarm,4000); return; }
-  disarm(); const keep={sound:S.sound,music:S.music}; S=Object.assign(blank(),keep); save();
-  closeOv("parentOv"); renderAll(); show("title"); toast("Fresh start! Let's go, Julia! 🌟");
+function askReset(){ sfx.click(); openOv("resetOv"); }
+["#pReset","#resetBtn","#titleReset"].forEach(id=>$(id).addEventListener("click",askReset));
+$("#resetYes").addEventListener("click",()=>{
+  const keep={sound:S.sound,music:S.music,dailyLock:S.dailyLock}; S=Object.assign(blank(),keep); save();
+  ["resetOv","parentOv","resultOv","chestOv","stickOv"].forEach(closeOv); renderAll(); show("title");
+  sfx.cheer(); toast("Fresh start! Let's go, Julia! 🌟");
 });
-document.addEventListener("keydown",e=>{ if(e.key==="Escape") ["stickOv","parentOv"].forEach(closeOv); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") ["stickOv","parentOv","resetOv"].forEach(closeOv); });
 
 /* ================= START ================= */
 function renderAll(){ renderHud(); renderMap(); }
