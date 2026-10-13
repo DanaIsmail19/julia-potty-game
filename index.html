@@ -159,7 +159,7 @@ button{font-family:inherit;color:inherit;cursor:pointer;touch-action:manipulatio
 .bub.popped{animation:popb .22s forwards;pointer-events:none}
 @keyframes floaty{to{transform:translateY(-16px) translateX(6px)}}
 @keyframes popb{to{transform:scale(1.6);opacity:0}}
-.arena{position:relative;height:220px;border-radius:24px;margin-top:10px;overflow:hidden;background:linear-gradient(180deg,#fff6d6,#ffe3ef);display:grid;place-items:center}
+.arena{position:relative;height:240px;border-radius:24px;margin-top:10px;overflow:hidden;background:linear-gradient(180deg,#fff6d6,#ffe3ef);display:grid;place-items:center}
 .arena .clean{font-size:24px;font-weight:800;animation:jump .6s;text-align:center;padding:0 10px}
 .tgt{position:absolute;top:0;left:0;border:0;background:none;padding:6px;font-size:46px;line-height:1;filter:drop-shadow(0 3px 0 rgba(0,0,0,.12))}
 .tgt.m-floaty{animation:floaty 2.2s ease-in-out infinite alternate}
@@ -179,6 +179,73 @@ button{font-family:inherit;color:inherit;cursor:pointer;touch-action:manipulatio
 .choice{width:84px;height:84px;border-radius:22px;border:4px solid #fff;background:#fff;font-size:48px;line-height:1;padding:0;box-shadow:0 5px 0 rgba(155,126,232,.25)}
 .choice.no{animation:shake .35s}
 .choice.yes{background:var(--mint);border-color:var(--mint-d);animation:jump .6s}
+.arena.auto{height:auto;min-height:240px;padding:10px 6px 46px;display:flex;flex-direction:column;gap:10px;justify-content:center;align-items:center}
+.arena.touchzone{touch-action:none}
+.donebanner{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);background:var(--mint-d);color:#fff;font-weight:800;font-size:16px;border-radius:16px;padding:3px 14px;z-index:6;width:max-content;max-width:92%;text-align:center;line-height:1.2;animation:bannerIn .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes bannerIn{from{transform:translateX(-50%) scale(.3)}}
+.tgt.bubtgt{width:58px;height:58px;border-radius:50%;border:3px solid #fff;background:radial-gradient(circle at 30% 28%,#fff 0 12%,rgba(255,255,255,.35) 30%,rgba(205,184,245,.45) 70%,rgba(168,230,207,.55));padding:0}
+.tgt.wob{filter:drop-shadow(0 0 10px #ff4d6d) grayscale(.5)}
+/* hold */
+.holdbtn{position:relative;border:0;background:none;padding:0;min-width:170px;min-height:160px;display:grid;place-items:center;touch-action:none;transition:transform .15s}
+.holdbtn .hemo{font-size:100px;line-height:1}
+.holdbtn.holding{transform:scale(1.08)}
+.holdbtn.spinning::after{content:"🌀";position:absolute;left:50%;top:50%;font-size:64px;animation:spinc .6s linear infinite;opacity:.9}
+@keyframes spinc{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+.growbub{display:block;width:30px;height:30px;border-radius:50%;border:3px solid #fff;background:radial-gradient(circle at 30% 28%,#fff 0 10%,rgba(255,255,255,.3) 30%,rgba(205,184,245,.45) 70%,rgba(168,230,207,.6));box-shadow:inset -6px -8px 16px rgba(155,126,232,.3)}
+.growbub.popped{animation:popb .3s forwards}
+.hbar{width:170px;height:16px;border-radius:99px;background:#fff;border:3px solid var(--lav);overflow:hidden}
+.hbar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--mint-d),var(--yel-d))}
+/* scrub */
+.scrubbox{position:relative;width:180px;height:180px;display:grid;place-items:center;transition:filter .3s;pointer-events:none}
+.scrubobj{font-size:130px;line-height:1}
+.dirt{position:absolute;width:48px;height:42px;border-radius:52% 44% 56% 46%;background:radial-gradient(circle at 40% 40%,var(--dc) 0 50%,transparent 72%);transform:translate(-50%,-50%);transition:opacity .15s,transform .15s}
+.dirt.emoji{background:none;width:auto;height:auto;font-size:34px;line-height:1}
+.scrubbox.shiny::after{content:"✨ ✨ ✨";position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:28px;white-space:nowrap;animation:breathe 1s infinite}
+.scrubbox.shiny .scrubobj{animation:jump .8s}
+.foam{position:absolute;border-radius:50%;background:rgba(255,255,255,.92);border:2px solid #d9ecff;pointer-events:none;animation:foamUp .9s forwards;z-index:3}
+@keyframes foamUp{to{transform:translateY(-30px) scale(1.4);opacity:0}}
+.tool{position:absolute;font-size:46px;pointer-events:none;transform:translate(-30%,-70%) rotate(-20deg);display:none;z-index:5}
+.tool.on{display:block}
+/* toilet paper */
+.tpwrap{position:relative;display:flex;flex-direction:column;align-items:center;width:100%;height:100%;padding-top:14px;touch-action:none;cursor:grab}
+.tproll{width:140px;height:64px;border-radius:32px;background:linear-gradient(180deg,#fff,#f1edf7 70%,#e2dbee);border:3px solid #d6cce8;position:relative;box-shadow:0 4px 0 rgba(0,0,0,.08);z-index:2}
+.tproll .hole{position:absolute;right:8px;top:50%;width:22px;height:44px;border-radius:50%;background:#c9a97a;transform:translateY(-50%);border:4px solid #f6efe2}
+.tpstrip{width:104px;display:flex;flex-direction:column;margin-top:-10px;transition:transform .8s ease-in,opacity .8s}
+.tpsq{height:40px;background:#fff;border:2px solid #e7def5;border-top:3px dashed #cdb8f5;display:grid;place-items:center;font-weight:800;font-size:20px;color:var(--lav-d);animation:unroll .2s ease-out}
+@keyframes unroll{from{height:0;opacity:.3}}
+.tpstrip.torn{transform:translate(90px,140px) rotate(35deg);opacity:0}
+.tphint{font-size:34px;animation:bob 1s infinite}
+/* drag */
+.dtarget{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:96px;display:grid;place-items:center;font-size:70px;line-height:1}
+.dtarget svg{width:96px;height:auto}
+.dtarget.gulp{animation:boing .35s}
+.ditem{position:absolute;border:0;background:none;font-size:42px;line-height:1;padding:4px;touch-action:none;transition:left .3s,top .3s,transform .3s,opacity .3s;z-index:3}
+.ditem.dragging{transition:none;transform:scale(1.25);z-index:7;filter:drop-shadow(0 8px 6px rgba(0,0,0,.2))}
+.ditem.fly{transform:scale(.3);opacity:.2}
+/* order */
+.slots{display:flex;gap:6px}
+.slot{width:44px;height:44px;border-radius:12px;background:#fff;border:3px dashed var(--lav);display:grid;place-items:center;font-size:26px}
+.slot.filled{border-style:solid;border-color:var(--mint-d);background:#eafff5;animation:jump .5s}
+.choice.ostep{height:auto;width:78px;padding:6px 2px;display:flex;flex-direction:column;align-items:center;font-size:40px}
+.ostep small{font-size:12px;font-weight:800;line-height:1.1;color:var(--ink)}
+.ostep.used{opacity:.3}
+.choice.num{font-size:42px;font-weight:800;color:var(--ink)}
+/* memory */
+.memgrid{display:grid;gap:8px}
+.mcard{width:62px;height:62px;border-radius:16px;border:3px solid #fff;background:linear-gradient(135deg,var(--lav),var(--pink));font-size:34px;padding:0;box-shadow:0 4px 0 rgba(155,126,232,.3)}
+.mcard.flip{background:#fff;border-color:var(--lav)}
+.mcard.match{background:var(--mint);border-color:var(--mint-d);animation:jump .5s}
+/* count */
+.countfield{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:240px}
+.cnt{position:relative;border:0;background:none;font-size:44px;line-height:1;padding:2px}
+.cnt[data-n]::after{content:attr(data-n);position:absolute;top:-6px;right:-6px;width:24px;height:24px;border-radius:50%;background:var(--pink-d);color:#fff;font-size:15px;font-weight:800;display:grid;place-items:center}
+/* whack */
+.holes{display:flex;gap:10px;justify-content:center;align-items:flex-end;width:100%;height:100%;padding:0 8px 26px}
+.hole{position:relative;flex:1;max-width:72px;height:120px;overflow:hidden}
+.hole::after{content:"";position:absolute;bottom:0;left:0;right:0;height:26px;border-radius:50%;background:#6b4a8a;box-shadow:inset 0 6px 0 #4a3366;z-index:2}
+.peek{position:absolute;left:50%;bottom:8px;transform:translate(-50%,120%);transition:transform .16s;border:0;background:none;font-size:52px;line-height:1;padding:0;z-index:1}
+.peek.up{transform:translate(-50%,0)}
+.peek.bonk{animation:boing .3s}
 .node.cur.newopen{animation:unlockPop .9s cubic-bezier(.3,1.6,.5,1),pulseNode 1.4s .9s infinite}
 @keyframes unlockPop{0%{transform:translate(-50%,-50%) scale(.2) rotate(-40deg)}60%{transform:translate(-50%,-50%) scale(1.35) rotate(8deg)}100%{transform:translate(-50%,-50%) scale(1)}}
 .finishbtn{display:block;margin:6px auto 0;font-size:28px;padding:12px 44px}
@@ -639,67 +706,229 @@ function tapNode(idx,st){
   toast(prev ? "Open the treasure chest first! 🎁" : "Finish the levels before this one! 🔒");
 }
 
-/* ================= DAILY CHALLENGES ================= */
+/* ================= DAILY CHALLENGES (28, one per level) ================= */
 const CHALLENGES=[
-  {t:"tap", title:"Dry your hands!", item:"💧", n:6, move:"floaty", hint:"Tap all the water drops!", done:"All dry! 🙌"},
-  {t:"tap", title:"Catch the stars!", item:"⭐", n:6, move:"fall", hint:"Tap the falling stars!", done:"Star catcher! 🌟"},
-  {t:"find", title:"Find the potty!", answer:"🚽", others:["🛁","🧸","🍎"], done:"You found the potty! 🚽"},
-  {t:"tap", title:"Feed Kiko berries!", item:"🍓", n:5, move:"floaty", hint:"Tap all the berries!", done:"Yum! Kiko says thank you! 🍓"},
-  {t:"tap", title:"Pop the balloons!", item:"🎈", n:6, move:"rise", hint:"Pop the balloons!", done:"Pop pop hooray! 🎉"},
-  {t:"find", title:"Find the soap!", answer:"🧼", others:["🍌","🧦","🎲"], done:"Soap found! 🫧"},
-  {t:"one", title:"Roll the toilet paper!", item:"🧻", n:5, done:"Roll roll roll! 🧻"},
-  {t:"find", title:"Where is Mimi?", answer:"🐱", others:["💨","💨"], hidden:true, done:"Peekaboo, Mimi! 🐱"},
-  {t:"find", title:"Pick the big girl undies!", answer:"🩲", others:["🧤","🎩","🧣"], done:"Big girl undies! 💖"},
-  {t:"one", title:"Wash the ducky!", item:"🦆", n:5, done:"Squeaky clean ducky! 🛁"},
-  {t:"tap", title:"Catch the butterflies!", item:"🦋", n:5, move:"wander", hint:"Tap the butterflies!", done:"Flutter flutter! 🦋"}
+  /* World 1: easy */
+  {t:"tap", title:"Dry your hands!", item:"💧", n:5, move:"floaty", hint:"Tap the water drops!", done:"All dry! 🙌"},
+  {t:"hold", title:"Flush the potty!", stages:["🚽"], swirl:true, ms:1500, hint:"Press and hold the potty!", done:"Whoosh! All flushed! 💦"},
+  {t:"find", title:"Find the potty!", answer:"🚽", others:["🛁","🧸","🍎"], hint:"Which one is the potty?", done:"You found the potty! 🚽"},
+  {t:"roll", title:"Take 3 squares of paper!", n:3, hint:"Pull the paper down!", done:"Just 3 squares! Good job! 🧻"},
+  {t:"scrub", title:"Wash the muddy ducky!", item:"🦆", n:4, tool:"🧼", dc:"#8a5a2b", hint:"Rub the mud off with soap!", done:"Squeaky clean ducky! ✨"},
+  {t:"drag", title:"Feed Kiko berries!", items:["🍓","🍓","🍓"], target:"crow", tapOk:true, hint:"Give the berries to Kiko!", done:"Yum! Thank you! 🍓"},
+  {t:"find", title:"Peekaboo, where is Mimi?", answer:"🐱", others:["💨","💨"], hidden:true, hint:"Tap a box to peek!", done:"Peekaboo, Mimi! 🐱"},
+  /* World 2: a bit harder */
+  {t:"scrub", title:"Brush your teeth!", item:"🦷", n:5, tool:"🪥", dc:"#e9cf52", hint:"Brush the yellow away!", done:"Shiny white teeth! 😁"},
+  {t:"order", title:"Potty steps!", steps:[["🚽","Sit"],["🧻","Wipe"],["🧼","Wash"]], hint:"What comes first?", done:"You know the steps! 🌟"},
+  {t:"tap", title:"Catch stars, not clouds!", item:"⭐", n:5, decoy:"☁️", decoys:3, move:"fall", hint:"Only the stars!", done:"Star catcher! 🌟"},
+  {t:"memory", title:"Match the pairs!", items:["🦆","🧼"], hint:"Find two the same!", done:"Great memory! 🧠"},
+  {t:"hold", title:"Water the flower!", stages:["🌱","🌿","🌷"], ms:2200, hint:"Press and hold to water!", done:"A pretty flower grew! 🌷"},
+  {t:"whack", title:"Find Pepper!", item:"🐱", holes:3, n:4, speed:1400, hint:"Tap Pepper when she pops up!", done:"Got you, Pepper! 😹"},
+  {t:"drag", title:"Put the toys away!", items:["🧸","🚗","🧩","⚽"], target:"🧺", hint:"Drag the toys into the basket!", done:"All tidy! 🧺"},
+  /* World 3: harder */
+  {t:"scrub", title:"Scrub the germs away!", item:"🖐️", n:6, tool:"🧼", dirt:"🦠", hint:"Rub every germ away!", done:"Germs gone! ✨"},
+  {t:"count", title:"How many duckies?", item:"🦆", count:3, options:[2,3,4], hint:"Tap each ducky to count!", done:"Three duckies! 🦆"},
+  {t:"find", title:"Pick the big girl undies!", answer:"🩲", others:["🩳","👙","🧦","🧤"], hint:"Which ones are undies?", done:"Big girl undies! 💖"},
+  {t:"tap", title:"Catch the butterflies!", item:"🦋", n:6, move:"wander", speed:.75, hint:"Tap the butterflies!", done:"Flutter flutter! 🦋"},
+  {t:"order", title:"Get ready for the potty!", steps:[["👖","Pants down"],["🚽","Sit"],["🧻","Wipe"],["💦","Flush"]], hint:"What comes first?", done:"Potty pro! 🏅"},
+  {t:"scrub", title:"Bath time for Pepper!", item:"🐱", n:7, tool:"🧼", dc:"#7a5232", hint:"Scrub Pepper clean!", done:"Pepper is sparkly! 😻"},
+  {t:"memory", title:"Memory match!", items:["🚽","🧻","🧼"], hint:"Find two the same!", done:"Super memory! 🧠"},
+  /* World 4: hardest */
+  {t:"drag", title:"Laundry time!", items:["🧦","👕","👗","🧦","🩲"], target:"🧺", hint:"Drag the clothes into the basket!", done:"Laundry done! 🧺"},
+  {t:"tap", title:"Pop bubbles, not germs!", item:"bubble", n:6, decoy:"🦠", decoys:3, move:"floaty", speed:.8, hint:"Only the bubbles!", done:"Pop pop! No germs! ✨"},
+  {t:"whack", title:"Super speedy Mimi!", item:"🐱", holes:4, n:6, speed:950, hint:"Tap Mimi fast!", done:"Wow, so fast! ⚡"},
+  {t:"count", title:"How many stars?", item:"⭐", count:5, options:[4,5,6], hint:"Tap each star to count!", done:"Five stars! ⭐"},
+  {t:"hold", title:"Blow a giant bubble!", bubble:true, ms:2800, hint:"Press and hold to blow!", done:"Giant bubble! POP! 🎉"},
+  {t:"memory", title:"Super memory!", items:["🦆","🧸","🌷","⭐"], hint:"Find two the same!", done:"Memory champion! 🏆"},
+  {t:"order", title:"The whole potty routine!", steps:[["👖","Pants down"],["🚽","Sit"],["🧻","Wipe"],["💦","Flush"],["🧼","Wash"]], hint:"What comes first?", done:"Potty Legend routine! 👑"}
 ];
+CHALLENGES.forEach(C=>{ if(!C.n) C.n = C.t==="memory"?C.items.length : C.t==="order"?C.steps.length : C.t==="drag"?C.items.length : 1; });
 const challengeFor = idx => CHALLENGES[idx % CHALLENGES.length];
-function setupChallenge(){
-  const C=challengeFor(run.idx), a=$("#arena"); a.innerHTML="";
-  $("#m3t").textContent=C.title;
-  if(C.t==="tap"){
-    const mv = reduced() ? "floaty" : C.move;
-    for(let i=0;i<C.n;i++){
-      const b=el("button","tgt m-"+mv); b.textContent=C.item; b.setAttribute("aria-label",C.item);
-      b.style.left=(3+i*(86/C.n)+Math.random()*4)+"%";
-      if(mv==="fall"||mv==="rise"){ b.style.animationDuration=(3.4+Math.random()*2)+"s"; b.style.animationDelay=(-Math.random()*4)+"s"; }
-      else { b.style.top=(8+Math.random()*55)+"%"; b.style.animationDuration=(2+Math.random()*2)+"s"; b.style.animationDelay=(-Math.random()*2)+"s"; }
-      const hit=e=>{ if(e) e.preventDefault(); if(run.bonus||b.classList.contains("got")) return;
-        b.classList.add("got"); sfx.pop(); setTimeout(()=>b.remove(),260); run.cCount++;
-        if(run.cCount>=C.n) bonusDone(C); else updateLevel(); };
-      b.addEventListener("pointerdown",hit);
-      b.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" ") hit(e); });
-      a.appendChild(b);
-    }
-  } else if(C.t==="one"){
-    const w=el("div","center"), b=el("button","bigtap"), dots=el("div","dots");
-    b.textContent=C.item; b.setAttribute("aria-label",C.title);
-    const draw=()=>dots.textContent="●".repeat(run.cCount)+"○".repeat(C.n-run.cCount); draw();
-    b.addEventListener("click",()=>{ if(run.bonus) return; run.cCount++; b.classList.remove("boing"); void b.offsetWidth; b.classList.add("boing");
-      tone(500+run.cCount*120,0,.12,"triangle",.15); draw(); if(run.cCount>=C.n) bonusDone(C); else updateLevel(); });
-    w.append(b,dots); a.appendChild(w);
-  } else {
-    const g=el("div","choices");
-    [C.answer,...C.others].sort(()=>Math.random()-.5).forEach(o=>{
-      const b=el("button","choice"); b.textContent=C.hidden?"📦":o; b.setAttribute("aria-label",C.hidden?"Box":o);
-      b.addEventListener("click",()=>{ if(run.bonus) return; if(C.hidden) b.textContent=o;
-        if(o===C.answer){ b.classList.add("yes"); bonusDone(C); }
-        else { b.classList.remove("no"); void b.offsetWidth; b.classList.add("no"); sfx.boop(); say("Not this one! Try again!"); } });
-      g.appendChild(b);
-    });
-    a.appendChild(g);
-  }
-}
+const shuffle = arr => arr.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+function clearTimers(){ if(run && run.timers){ run.timers.forEach(clearInterval); run.timers=[]; } }
+function advance(C){ run.cCount++; if(run.cCount>=C.n) bonusDone(C); else updateLevel(); }
 function bonusDone(C){
-  run.bonus=true; sfx.cheer(); setTimeout(sfx.giggle,300); confetti(50); say(C.done);
-  if(C.t==="tap") setTimeout(()=>{ $("#arena").innerHTML=`<div class="clean">${C.done}</div>`; },280);
+  if(run.bonus) return;
+  run.bonus=true; clearTimers(); sfx.cheer(); setTimeout(sfx.giggle,300); confetti(50); say(C.done);
+  const a=$("#arena"); a.querySelectorAll(".decoy").forEach(d=>d.remove());
+  const bn=el("div","donebanner"); bn.textContent=C.done; setTimeout(()=>a.appendChild(bn),350);
   updateLevel();
+}
+const BUILD={};
+BUILD.tap=(C,a)=>{
+  const mv=reduced()?"floaty":C.move, sp=C.speed||1, total=C.n+(C.decoys||0), slots=shuffle([...Array(total).keys()]);
+  for(let k=0;k<total;k++){
+    const good=k<C.n, b=el("button","tgt m-"+mv+(good?"":" decoy"));
+    if(good && C.item==="bubble") b.classList.add("bubtgt"); else b.textContent=good?C.item:C.decoy;
+    b.setAttribute("aria-label",good?(C.item==="bubble"?"bubble":C.item):"not this one");
+    b.style.left=(3+slots[k]*(86/total)+Math.random()*3)+"%";
+    if(mv==="fall"||mv==="rise"){ b.style.animationDuration=((3.4+Math.random()*2)*sp)+"s"; b.style.animationDelay=(-Math.random()*4)+"s"; }
+    else { b.style.top=(8+Math.random()*55)+"%"; b.style.animationDuration=((2+Math.random()*2)*sp)+"s"; b.style.animationDelay=(-Math.random()*2)+"s"; }
+    const hit=e=>{ if(e) e.preventDefault(); if(run.bonus||b.classList.contains("got")) return;
+      if(!good){ b.classList.add("wob"); setTimeout(()=>b.classList.remove("wob"),400); sfx.boop(); return; }
+      b.classList.add("got"); sfx.pop(); setTimeout(()=>b.remove(),260); advance(C); };
+    b.addEventListener("pointerdown",hit);
+    b.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" ") hit(e); });
+    a.appendChild(b);
+  }
+};
+BUILD.find=(C,a)=>{
+  const g=el("div","choices");
+  shuffle([C.answer,...C.others]).forEach(o=>{
+    const b=el("button","choice"); b.textContent=C.hidden?"📦":o; b.setAttribute("aria-label",C.hidden?"Box":o);
+    b.addEventListener("click",()=>{ if(run.bonus) return; if(C.hidden) b.textContent=o;
+      if(o===C.answer){ b.classList.add("yes"); bonusDone(C); }
+      else { b.classList.remove("no"); void b.offsetWidth; b.classList.add("no"); sfx.boop(); say("Not this one! Try again!"); } });
+    g.appendChild(b);
+  });
+  a.appendChild(g);
+};
+BUILD.hold=(C,a)=>{
+  const w=el("div","center"), b=el("button","holdbtn"), bar=el("div","hbar"), fill=el("span"); bar.appendChild(fill);
+  b.innerHTML = C.bubble ? '<span class="growbub"></span>' : `<span class="hemo">${C.stages[0]}</span>`;
+  b.setAttribute("aria-label",C.title);
+  const myRun=run; let p=0, holding=false, raf=null, last=0;
+  const draw=()=>{ fill.style.width=(p*100)+"%";
+    if(C.bubble){ const g=b.querySelector(".growbub"); g.style.width=g.style.height=(30+p*130)+"px"; }
+    else b.querySelector(".hemo").textContent=C.stages[Math.min(C.stages.length-1,Math.floor(p*C.stages.length))];
+    b.classList.toggle("holding",holding); b.classList.toggle("spinning",holding&&!!C.swirl); };
+  const tick=()=>{ raf=null; if(run!==myRun||run.bonus) return;
+    const now=performance.now(), dt=now-last; last=now;
+    p = holding ? Math.min(1,p+dt/C.ms) : Math.max(0,p-dt/(C.ms*2));
+    if(holding && Math.random()<.25) tone(300+p*900,0,.06,"sine",.06);
+    if(p>=1){ holding=false; draw(); if(C.bubble){ b.querySelector(".growbub").classList.add("popped"); slide(400,1600,.15,"sine",.25); } bonusDone(C); return; }
+    draw(); if(holding||p>0) raf=requestAnimationFrame(tick); };
+  b.addEventListener("pointerdown",e=>{ e.preventDefault(); if(run.bonus) return; holding=true; last=performance.now(); if(!raf) raf=requestAnimationFrame(tick); });
+  ["pointerup","pointerleave","pointercancel"].forEach(ev=>b.addEventListener(ev,()=>{ holding=false; }));
+  b.addEventListener("contextmenu",e=>e.preventDefault());
+  w.append(b,bar); a.appendChild(w); draw();
+};
+BUILD.scrub=(C,a)=>{
+  a.classList.add("touchzone"); a.style.setProperty("--dc",C.dc||"#8a5a2b");
+  const box=el("div","scrubbox"); box.innerHTML=`<span class="scrubobj">${C.item}</span>`;
+  const spots=[];
+  for(let i=0;i<C.n;i++){
+    const ang=i*2*Math.PI/C.n+.6, r=(i%2?.5:1);
+    const d=el("span","dirt"+(C.dirt?" emoji":"")); if(C.dirt) d.textContent=C.dirt;
+    d.style.left=(50+Math.cos(ang)*26*r)+"%"; d.style.top=(52+Math.sin(ang)*24*r)+"%"; d._h=1;
+    box.appendChild(d); spots.push(d);
+  }
+  const tool=el("span","tool"); tool.textContent=C.tool||"🧼";
+  a.append(box,tool);
+  const dull=()=>{ const f=run.cCount/C.n; box.style.filter=`saturate(${.35+.65*f}) brightness(${.85+.15*f})`; }; dull();
+  let down=false;
+  const rub=e=>{ if(run.bonus) return; const ar=a.getBoundingClientRect(), x=e.clientX, y=e.clientY;
+    tool.style.left=(x-ar.left)+"px"; tool.style.top=(y-ar.top)+"px"; tool.classList.add("on");
+    if(Math.random()<.3){ const f=el("span","foam"), s=10+Math.random()*16; f.style.width=f.style.height=s+"px"; f.style.left=(x-ar.left-s/2+(Math.random()*20-10))+"px"; f.style.top=(y-ar.top-s/2)+"px"; a.appendChild(f); setTimeout(()=>f.remove(),900); }
+    spots.forEach(sp=>{ if(sp._h<=0) return; const r=sp.getBoundingClientRect();
+      if(Math.hypot(x-(r.left+r.width/2),y-(r.top+r.height/2))<42){
+        sp._h-=.07; sp.style.opacity=Math.max(0,sp._h); sp.style.transform=`translate(-50%,-50%) scale(${.5+.5*Math.max(0,sp._h)})`;
+        if(Math.random()<.15) tone(1200+Math.random()*600,0,.04,"sine",.04);
+        if(sp._h<=0){ sp.remove(); sfx.pop(); run.cCount++; dull(); if(run.cCount>=C.n){ box.style.filter=""; box.classList.add("shiny"); tool.classList.remove("on"); bonusDone(C); } else updateLevel(); }
+      } });
+  };
+  a.addEventListener("pointerdown",e=>{ e.preventDefault(); down=true; try{a.setPointerCapture(e.pointerId);}catch(_){} rub(e); });
+  a.addEventListener("pointermove",e=>{ if(down) rub(e); });
+  ["pointerup","pointercancel"].forEach(ev=>a.addEventListener(ev,()=>{ down=false; tool.classList.remove("on"); }));
+};
+BUILD.roll=(C,a)=>{
+  a.classList.add("touchzone");
+  const w=el("div","tpwrap"); w.innerHTML=`<div class="tproll"><span class="hole"></span></div><div class="tpstrip"></div><div class="tphint">👇</div>`;
+  a.appendChild(w);
+  const strip=w.querySelector(".tpstrip"), hint=w.querySelector(".tphint");
+  let down=false, lastY=0, acc=0, moved=0;
+  const add=()=>{ if(run.bonus) return; const sq=el("div","tpsq"); sq.textContent=run.cCount+1; strip.appendChild(sq);
+    slide(1800,900,.08,"sawtooth",.05); say(String(run.cCount+1));
+    if(run.cCount+1>=C.n){ hint.remove(); setTimeout(()=>{ strip.classList.add("torn"); slide(2200,500,.18,"sawtooth",.08); },500); }
+    advance(C); };
+  w.addEventListener("pointerdown",e=>{ e.preventDefault(); down=true; lastY=e.clientY; acc=0; moved=0; try{w.setPointerCapture(e.pointerId);}catch(_){} });
+  w.addEventListener("pointermove",e=>{ if(!down) return; const dy=e.clientY-lastY; lastY=e.clientY; moved+=Math.abs(dy); if(dy>0){ acc+=dy; if(acc>=32){ acc=0; add(); } } });
+  ["pointerup","pointercancel"].forEach(ev=>w.addEventListener(ev,()=>{ if(down && moved<6) add(); down=false; }));
+};
+BUILD.drag=(C,a)=>{
+  a.classList.add("touchzone");
+  const tgt=el("div","dtarget"); tgt.innerHTML = C.target==="crow" ? CH.crow : `<span>${C.target}</span>`; a.appendChild(tgt);
+  C.items.forEach((v,i)=>{
+    const d=el("button","ditem"); d.textContent=v; d.setAttribute("aria-label",v);
+    const home={x:4+(i%3)*20, y:12+Math.floor(i/3)*42}; d.style.left=home.x+"%"; d.style.top=home.y+"%";
+    let dragging=false, ox=0, oy=0, sx=0, sy=0, moved=0;
+    const deliver=()=>{ const ar=a.getBoundingClientRect(), t=tgt.getBoundingClientRect(); d.disabled=true; d.classList.add("fly");
+      d.style.left=(t.left-ar.left+t.width/2-24)+"px"; d.style.top=(t.top-ar.top+t.height/2-24)+"px";
+      setTimeout(()=>{ d.remove(); tgt.classList.remove("gulp"); void tgt.offsetWidth; tgt.classList.add("gulp"); sfx.pop(); advance(C); },330); };
+    d.addEventListener("pointerdown",e=>{ if(run.bonus||d.disabled) return; e.preventDefault(); dragging=true; moved=0;
+      try{d.setPointerCapture(e.pointerId);}catch(_){} const r=d.getBoundingClientRect(); ox=e.clientX-r.left; oy=e.clientY-r.top; sx=e.clientX; sy=e.clientY; d.classList.add("dragging"); });
+    d.addEventListener("pointermove",e=>{ if(!dragging) return; const ar=a.getBoundingClientRect();
+      moved=Math.max(moved,Math.hypot(e.clientX-sx,e.clientY-sy)); d.style.left=(e.clientX-ar.left-ox)+"px"; d.style.top=(e.clientY-ar.top-oy)+"px"; });
+    const end=()=>{ if(!dragging) return; dragging=false; d.classList.remove("dragging");
+      const r=d.getBoundingClientRect(), t=tgt.getBoundingClientRect(), cx=r.left+r.width/2, cy=r.top+r.height/2;
+      if((cx>t.left-14&&cx<t.right+14&&cy>t.top-14&&cy<t.bottom+14) || (C.tapOk && moved<8)) deliver();
+      else { d.style.left=home.x+"%"; d.style.top=home.y+"%"; if(moved>8) sfx.boop(); } };
+    d.addEventListener("pointerup",end); d.addEventListener("pointercancel",end);
+    a.appendChild(d);
+  });
+};
+BUILD.order=(C,a)=>{
+  a.classList.add("auto");
+  const slots=el("div","slots"); C.steps.forEach(()=>{ const s=el("span","slot"); s.textContent="❔"; slots.appendChild(s); });
+  const g=el("div","choices");
+  shuffle(C.steps.map((s,i)=>({s,i}))).forEach(({s,i})=>{
+    const b=el("button","choice ostep"); b.innerHTML=`<span>${s[0]}</span><small>${s[1]}</small>`; b.setAttribute("aria-label",s[1]);
+    b.addEventListener("click",()=>{ if(run.bonus||b.disabled) return;
+      if(i===run.cCount){ slots.children[i].textContent=s[0]; slots.children[i].classList.add("filled"); b.disabled=true; b.classList.add("used"); tone(600+i*150,0,.15,"triangle",.16); say(s[1]); advance(C); }
+      else { b.classList.remove("no"); void b.offsetWidth; b.classList.add("no"); sfx.boop(); say(run.cCount===0?"What comes first?":"What comes next?"); } });
+    g.appendChild(b);
+  });
+  a.append(slots,g);
+};
+BUILD.memory=(C,a)=>{
+  a.classList.add("auto");
+  const cards=shuffle([...C.items,...C.items]), g=el("div","memgrid");
+  g.style.gridTemplateColumns=`repeat(${cards.length<=4?2:cards.length<=6?3:4},auto)`;
+  let open=[], lock=false;
+  cards.forEach(v=>{ const b=el("button","mcard"); b.textContent="❓"; b.setAttribute("aria-label","Card");
+    b.addEventListener("click",()=>{ if(lock||run.bonus||b.classList.contains("flip")) return;
+      b.classList.add("flip"); b.textContent=v; b._v=v; sfx.click(); open.push(b);
+      if(open.length===2){ const [x,y]=open; open=[];
+        if(x._v===y._v){ x.classList.add("match"); y.classList.add("match"); sfx.pop(); advance(C); }
+        else { lock=true; sfx.boop(); setTimeout(()=>{ [x,y].forEach(c=>{ c.classList.remove("flip"); c.textContent="❓"; }); lock=false; },850); } } });
+    g.appendChild(b); });
+  a.appendChild(g);
+};
+BUILD.count=(C,a)=>{
+  a.classList.add("auto");
+  const field=el("div","countfield"); let tapped=0;
+  for(let i=0;i<C.count;i++){ const b=el("button","cnt"); b.textContent=C.item; b.setAttribute("aria-label",C.item);
+    b.addEventListener("click",()=>{ if(b.dataset.n||run.bonus) return; tapped++; b.dataset.n=tapped; tone(500+tapped*110,0,.15,"triangle",.15); say(String(tapped)); });
+    field.appendChild(b); }
+  const opts=el("div","choices");
+  C.options.forEach(n=>{ const o=el("button","choice num"); o.textContent=n;
+    o.addEventListener("click",()=>{ if(run.bonus) return;
+      if(n===C.count){ o.classList.add("yes"); bonusDone(C); }
+      else { o.classList.remove("no"); void o.offsetWidth; o.classList.add("no"); sfx.boop(); say("Let's count again!"); } });
+    opts.appendChild(o); });
+  a.append(field,opts);
+};
+BUILD.whack=(C,a)=>{
+  const row=el("div","holes"), peeks=[];
+  for(let i=0;i<C.holes;i++){ const h=el("div","hole"), pk=el("button","peek"); pk.textContent=C.item; pk.setAttribute("aria-label",C.item);
+    pk.addEventListener("pointerdown",e=>{ e.preventDefault(); if(run.bonus||!pk.classList.contains("up")) return;
+      pk.classList.remove("up"); pk.classList.add("bonk"); setTimeout(()=>pk.classList.remove("bonk"),300);
+      tone(900,0,.08,"square",.1); tone(1300,.06,.1,"square",.08); advance(C); });
+    h.appendChild(pk); row.appendChild(h); peeks.push(pk); }
+  a.appendChild(row);
+  let last=-1;
+  const pop=()=>{ if(run.bonus) return; peeks.forEach(x=>x.classList.remove("up")); let i; do{ i=Math.floor(Math.random()*peeks.length); }while(i===last); last=i; peeks[i].classList.add("up"); };
+  pop(); run.timers.push(setInterval(pop,C.speed));
+};
+function setupChallenge(){
+  const C=challengeFor(run.idx), a=$("#arena"); a.innerHTML=""; a.className="arena"; a.removeAttribute("style");
+  $("#m3t").textContent=C.title; BUILD[C.t](C,a);
 }
 
 /* ================= LEVEL ================= */
 let run=null;
 function startLevel(idx){
-  run={idx,potty:false,oops:false,wash:false,popped:0,bonus:false,cCount:0};
+  clearTimers();
+  run={idx,potty:false,oops:false,wash:false,popped:0,bonus:false,cCount:0,timers:[]};
   const w=Math.floor(idx/7), W=WORLDS[w];
   $("#level").style.background=W.bg;
   $("#lvTitle").textContent=`Level ${idx+1}`;
@@ -714,8 +943,7 @@ function updateLevel(){
   $("#m2").classList.toggle("done",run.wash);
   $("#m2s").textContent = run.wash ? "🙌 Sparkly clean hands!" : run.popped ? `Bubbles popped: ${run.popped} / 8` : "Pop all the soap bubbles!";
   const C=challengeFor(run.idx); $("#m3").classList.toggle("done",run.bonus);
-  $("#m3s").textContent = run.bonus ? "🎯 Bonus +30 ⭐ won!" :
-    (C.t==="tap" ? `${C.hint} ${run.cCount}/${C.n}` : C.t==="one" ? `Tap it ${C.n} times!` : C.hidden ? "Tap a box to peek!" : "Tap the right one!") + " Bonus +30 ⭐";
+  $("#m3s").textContent = run.bonus ? "🎯 Bonus +30 ⭐ won!" : `${C.hint}${C.n>1?` ${run.cCount}/${C.n}`:""} 🎯+30`;
   $("#finishBtn").classList.toggle("ready", run.potty && run.wash);
 }
 $("#toiletBtn").addEventListener("click",()=>{
@@ -745,8 +973,9 @@ function popBubble(bb){
   if(run.popped>=8){ run.wash=true; sfx.cheer(); confetti(50); $("#sink").innerHTML=`<div class="clean">✨🙌✨</div>`; say("Sparkly clean hands!"); }
   updateLevel();
 }
-$("#lvBack").addEventListener("click",()=>{ sfx.click(); show("map"); renderMap(); focusCurrent(); });
+$("#lvBack").addEventListener("click",()=>{ clearTimers(); sfx.click(); show("map"); renderMap(); focusCurrent(); });
 $("#finishBtn").addEventListener("click",()=>{
+  clearTimers();
   const win = run.potty && run.wash && !run.oops, before=S.points, bonus=run.bonus?30:0;
   S.points = (win ? S.points+100 : Math.max(0,S.points-20)) + bonus;
   S.levels[run.idx]={s:win?"win":"try", d:today(), p:S.points-before, b:run.bonus};
